@@ -1,0 +1,21 @@
+{
+    "ac_on_output": "binary_sensor.hallway_ac_on",
+    "api_key": "",
+    "base_api": "/api/",
+    "base_url": "",
+    "circulate_after_input": "input_number.still_air_time_limit",
+    "circulation_time_input": "input_number.still_air_circulation_time",
+    "enabled": false,
+    "fan_on_output": "binary_sensor.hallway_fan_on",
+    "heat_on_output": "binary_sensor.hallway_heat_on",
+    "high_temp_input": "input_number.cool_above",
+    "hvac_enabled_input": "input_boolean.hvac_enabled",
+    "low_temp_input": "input_number.heat_below",
+    "over_temp_input": "input_number.temperature_target_overshoot",
+    "preventilation_time_input": "input_number.ventilation_assist_cycle_time",
+    "stage_cooldown_input": "input_number.stage_cooldown",
+    "stage_limit_input": "input_number.stage_limit",
+    "temperature_output": "sensor.hallway_thermostat_temperature",
+    "ventilation_enabled_input": "input_boolean.ac_ventilation_assist",
+    "ventilation_on_output": "binary_sensor.hallway_whf_on"
+}
