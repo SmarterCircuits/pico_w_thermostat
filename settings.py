@@ -59,6 +59,8 @@ class ThermostatSettings:
     def load_from_file(self, file):
         with open(file) as fd:
             data = json.load(fd)
+            self.wifi_ssid = data["wifi_ssid"]
+            self.wifi_pass = data["wifi_pass"]
             self.room = data["room"]
             self.heat_pin = data["heat_pin"]
             self.ac_pin = data["ac_pin"]
@@ -118,4 +120,3 @@ class ThermostatSettings:
             self.hvac_enabled = hvac_enabled.lower() == "on"
         
         self.save_to_file('settings.json')
-
