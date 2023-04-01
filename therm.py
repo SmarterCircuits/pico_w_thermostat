@@ -11,12 +11,12 @@ class Thermostat:
         self.settings = ThermostatSettings('settings.json')
         self.state = ThermostatState()
 
-        self.heat = Pin(self.settings.heat_pin)
-        self.fan = Pin(self.settings.fan_pin)
-        self.ac = Pin(self.settings.ac_pin)
-        self.heat.off()
-        self.fan.off()
-        self.ac.off()
+        self.heat = Pin(self.settings.heat_pin, Pin.OUT)
+        self.fan = Pin(self.settings.fan_pin, Pin.OUT)
+        self.ac = Pin(self.settings.ac_pin, Pin.OUT)
+        self.heat.on()
+        self.fan.on()
+        self.ac.on()
         self.sensor = ADC(4)
 
         now_time = (time.localtime()[3],time.localtime()[4])
@@ -67,11 +67,11 @@ class Thermostat:
         # if the system is disabled, make sure nothing is on and stop here.
         if self.settings.hvac_enabled is not True:
             if self.state.ac_on:
-                self.ac.off()
+                self.ac.on()
             if self.state.fan_on:
-                self.fan.off()
+                self.fan.on()
             if self.state.heat_on:
-                self.heat.off()
+                self.heat.on()
             self.state.report_to_home_assistant(self.ha_helper)
             return
 
@@ -141,12 +141,12 @@ class Thermostat:
         self.state.report_to_home_assistant(self.ha_helper)
     
     def start_circulating(self, now_time:tuple):
-        self.fan.on()
+        self.fan.off()
         self.state.fan_on = True
         self.circulate_until = self.add_minutes(now_time,self.settings.circulation_cycle_minutes)
     
     def stop_circulating(self, now_time:tuple):
-        self.fan.off()
+        self.fan.on()
         self.state.fan_on = False
         self.cool_down_stage(now_time)
         
@@ -155,20 +155,20 @@ class Thermostat:
         self.ventilating = True
     
     def start_cooling(self):
-        self.ac.on()
+        self.ac.off()
         self.state.ac_on = True
     
     def stop_cooling(self, now_time:tuple):
-        self.ac.off()
+        self.ac.on()
         self.state.ac_on = False
         self.cool_down_stage(now_time)
     
     def start_heating(self):
-        self.heat.on()
+        self.heat.off()
         self.state.heat_on = True
     
     def stop_heating(self, now_time:tuple):
-        self.heat.off()
+        self.heat.on()
         self.state.heat_on = False
         self.cool_down_stage(now_time)
     
@@ -176,6 +176,7 @@ class Thermostat:
         self.last_circulation = now_time
         self.cooldown_until = self.add_minutes(now_time, self.settings.stage_cooldown_minutes)
         self.stage_cooldown = True
+
 
 
 
