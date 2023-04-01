@@ -7,6 +7,7 @@ It also relies on the ssd1306 module.
 
 More documentation pending.
 
-Features to be added:
-MQTT support
-Actually use the whole house fan (needs the on command which will send a message to either MQTT or Home Assistant depending on how your fan is set up).
+## Features to be added:
+ - MQTT support
+ - Acually use the whole house fan (needs the on command which will send a message to either MQTT or Home Assistant depending on how your fan is set up).
+ - DHT22 support
