@@ -4,6 +4,7 @@ from display import Display
 import time
 import network
 
+sta_if = network.WLAN(network.STA_IF)
 thermostat = Thermostat()
 thermostat.ha_settings.load_from_file('home_assistant.json')
 thermostat.settings.load_from_file('settings.json')
@@ -52,16 +53,8 @@ def show_screen(pre = ""):
 
 if __name__ == "__main__":
     # Connect to the Wi-Fi network
-    sta_if = network.WLAN(network.STA_IF)
     sta_if.active(True)
     sta_if.connect(thermostat.settings.wifi_ssid, thermostat.settings.wifi_pass)
-    # Wait for the connection to be established
-    screen.display_text("connecting wifi...")
-    while not sta_if.isconnected():
-        thermostat.run()
-        show_screen("!^ ")
-        time.sleep(10)
-        pass
 
     btn_up = Button(2)
     btn_up.on_up = btn_up_press
@@ -76,7 +69,10 @@ if __name__ == "__main__":
         btn_down.update()
         if ticks == 0:
             thermostat.run()
-            show_screen()
+            if sta_if.isconnected():
+                show_screen()
+            else:
+                show_screen('!^ ')
             ticks = thermostat.settings.run_every_seconds * 10
         ticks = ticks - 1
         time.sleep(0.1)
