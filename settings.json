@@ -1,0 +1,21 @@
+{
+    "wifi_ssid": "",
+    "wifi_pass": "",
+    "ac_pin": 10,
+    "air_circulation_minutes": 30,
+    "circulation_cycle_minutes": 10,
+    "failed_read_halt_limit": 10,
+    "fan_pin": 11,
+    "heat_pin": 12,
+    "hvac_enabled": true,
+    "manual_override": false,
+    "room": "hallway",
+    "run_every_seconds": 10,
+    "stage_cooldown_minutes": 5,
+    "stage_limit_minutes": 15,
+    "swing_temp_offset": 1,
+    "temperature_high_setting": 73,
+    "temperature_low_setting": 69,
+    "use_whole_house_fan": false,
+    "ventilation_cycle_minutes": 10
+}
