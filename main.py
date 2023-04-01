@@ -6,11 +6,11 @@ import network
 
 thermostat = Thermostat()
 thermostat.ha_settings.load_from_file('home_assistant.json')
+thermostat.settings.load_from_file('settings.json')
 screen = Display(8,9)
 setting_select = "low temp"
 
 def btn_up_press():
-    global thermostat
     if setting_select == "high temp":
         thermostat.settings.temperature_high_setting = thermostat.settings.temperature_high_setting + 1
     elif setting_select == "low temp":
@@ -20,7 +20,6 @@ def btn_up_press():
     show_screen()
 
 def btn_down_press():
-    global thermostat
     if setting_select == "high temp":
         thermostat.settings.temperature_high_setting = thermostat.settings.temperature_high_setting - 1
     elif setting_select == "low temp":
@@ -30,6 +29,7 @@ def btn_down_press():
     show_screen()
 
 def btn_m_press():
+    global setting_select
     if setting_select == "high temp":
         setting_select = "low temp"
     elif setting_select == "low temp":
@@ -66,7 +66,9 @@ if __name__ == "__main__":
     btn_up = Button(2)
     btn_up.on_up = btn_up_press
     btn_m = Button(3)
+    btn_m.on_up = btn_m_press
     btn_down = Button(4)
+    btn_down.on_up = btn_down_press
     ticks = 0
     while True:
         btn_up.update()
@@ -78,3 +80,4 @@ if __name__ == "__main__":
             ticks = thermostat.settings.run_every_seconds * 10
         ticks = ticks - 1
         time.sleep(0.1)
+
