@@ -8,7 +8,7 @@ class Thermostat:
     def __init__(self):
         self.ha_settings = HomeAssistantSettings()
         self.ha_helper = HomeAssistantHelper(self.ha_settings)
-        self.settings = ThermostatSettings('settings.json')
+        self.settings = ThermostatSettings()
         self.state = ThermostatState()
 
         self.heat = Pin(self.settings.heat_pin, Pin.OUT)
@@ -176,7 +176,3 @@ class Thermostat:
         self.last_circulation = now_time
         self.cooldown_until = self.add_minutes(now_time, self.settings.stage_cooldown_minutes)
         self.stage_cooldown = True
-
-
-
-
