@@ -49,6 +49,6 @@ Below are the recommended helpers and their purpose. You may omit any of these a
 
 - MQTT support
 
-- Actually use the whole house fan (needs the on command which will send a message to either MQTT or Home Assistant depending on how your fan is set up).
+- Actually use the ventilation cycle (needs the "on" command which will send a message to either MQTT or Home Assistant depending on how your fan is set up).
 
-- DHT22 support
+- External sensor support (doesn't have to be a DHT11 or DHT22, I will be testing several sensors and including instructions for setting up each)
