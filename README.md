@@ -33,14 +33,14 @@ Below are the recommended helpers and their purpose. You may omit any of these a
 |--|--|--|--|
 |circulate_after_input|input_number|still_air_time_limit|how many minutes to wait since the last time heating, cooling, or circulation ended before circulating air|
 |circulation_time_input|input_number|still_air_circulation_time|how many minutes circulating cycle should run when circulate_air_input has been reached|
-|high_temp_input|input_number|cool_above|
-|hvac_enabled_input|input_boolean|hvac_enabled|
-|low_temp_input|input_number|heat_below|
-|over_temp_input|input_number|temperature_target_overshoot|
-|preventilation_time_input|input_number|ventilation_assist_cycle_time|
-|stage_cooldown_input|input_number|stage_cooldown|
-|stage_limit_input|input_number|stage_limit|
-|ventilation_enabled_input|input_boolean|ac_ventilation_assist|
+|high_temp_input|input_number|cool_above|temperature at which the cooling cycle is started when the system is enabled|
+|low_temp_input|input_number|heat_below|temperature at which the heating cycle is started when the system is enabled|
+|hvac_enabled_input|input_boolean|hvac_enabled|if the system is disabled, it will report temperature readings but not run any cycle|
+|over_temp_input|input_number|temperature_target_overshoot|how many degrees beyond cycle start temp the system should continue to heat or cool before shutting off|
+|preventilation_time_input|input_number|ventilation_assist_cycle_time|how many minutes the ventilation should run prior to the cooling cycle if ventilation is enabled|
+|stage_cooldown_input|input_number|stage_cooldown|how many minutes the system must wait before starting another cycle after the previous one stops|
+|stage_limit_input|input_number|stage_limit|how many minutes any cycle can run at most|
+|ventilation_enabled_input|input_boolean|ac_ventilation_assist|whether or not the system runs a ventilation fan before cooling cycles|
 
   
   
