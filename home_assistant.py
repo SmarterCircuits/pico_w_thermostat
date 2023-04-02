@@ -1,5 +1,6 @@
 import json
 import urequests as requests
+import time
 
 class HomeAssistantSettings:
     def __init__(self, from_file:str = None):
@@ -62,21 +63,27 @@ class HomeAssistantHelper:
         
     def get_home_assistant_setting(self, setting:str):
         try:
-            return requests.get(f"{self.settings.base_api}states/{setting}",headers={
+            val = requests.get(f"{self.settings.base_api}states/{setting}",headers={
                 "Authorization": f"Bearer {self.settings.api_key}",
                 "content-type": "application/json",
             }).json()["state"]
+            print(f"{setting} {val}")
+            time.sleep(0.1)
+            return val
         except:
             print(f"failed to get setting: {self.settings.base_api}states/{setting}")
+            time.sleep(0.1)
             return None
         
     def send_to_home_assistant(self, helper:str, value):
         try:
-            requests.post(f"{self.settings.base_api}states/{helper}",json.dumps({"state":value,"unique_id":helper,"entity_id":helper}),headers={
+            response = requests.post(f"{self.settings.base_api}states/{helper}",data=json.dumps({"state":value,"unique_id":f"picostat","entity_id":helper}),headers={
                     "Authorization": f"Bearer {self.settings.api_key}",
                     "content-type": "application/json",
                 })
+            print(response.status_code)
         except:
             print(f"failed to set helper: {self.settings.base_api}states/{helper} value:{value}")
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
+        time.sleep(0.1)

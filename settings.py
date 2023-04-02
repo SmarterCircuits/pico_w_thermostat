@@ -93,23 +93,23 @@ class ThermostatSettings:
         
         circ_time = helper.get_home_assistant_setting(helper.settings.circulation_time_input)
         if circ_time is not None:
-            self.circulation_cycle_minutes = int(circ_time)
+            self.circulation_cycle_minutes = float(circ_time)
         
         still_time = helper.get_home_assistant_setting(helper.settings.circulate_after_input)
         if still_time is not None:
-            self.air_circulation_minutes = int(still_time)
+            self.air_circulation_minutes = float(still_time)
         
         stage_limit = helper.get_home_assistant_setting(helper.settings.stage_limit_input)
         if stage_limit is not None:
-            self.stage_limit_minutes = int(stage_limit)
+            self.stage_limit_minutes = float(stage_limit)
         
         stage_cooldown = helper.get_home_assistant_setting(helper.settings.stage_cooldown_input)
         if stage_cooldown is not None:
-            self.stage_cooldown_minutes = int(stage_cooldown)
+            self.stage_cooldown_minutes = float(stage_cooldown)
         
         over_temp = helper.get_home_assistant_setting(helper.settings.over_temp_input)
         if over_temp is not None:
-            self.swing_temp_offset = int(over_temp)
+            self.swing_temp_offset = float(over_temp)
         
         use_vent = helper.get_home_assistant_setting(helper.settings.ventilation_enabled_input)
         if use_vent is not None:
