@@ -20,7 +20,7 @@ This project also relies on the micropython-ssd1306 module.
 
 ## Using with Home Assistant
 
-  
+**IMPORTANT: This project is not in any way associated with, endorsed by, or supported by Home Assistant or any of their engineers. This is only meant to work with Home Assistant because it is what I use.**  
 
 You will need your Long-Life Key to access Home Assistant from the Pico W Thermostat. Just paste it into the appropriate setting in the home_assistant.json file.
 
