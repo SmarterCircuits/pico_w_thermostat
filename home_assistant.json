@@ -19,5 +19,7 @@
     "heat_on_output": "binary_sensor.hallway_heat_on",
     "temperature_output": "sensor.hallway_thermostat_temperature",
     "ventilation_on_output": "binary_sensor.hallway_whf_on",
-    "temperature_offset_input": "input_number.temperature_offset"
+    "temperature_offset_input": "input_number.temperature_offset",
+    "use_home_assistant_ventilation": false,
+    "ventilation_entity_id": "binary_sensor.ventilation_trigger"
 }

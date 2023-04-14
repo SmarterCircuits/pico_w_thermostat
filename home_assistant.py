@@ -25,6 +25,8 @@ class HomeAssistantSettings:
         self.temperature_output = "sensor.hallway_thermostat_temperature"
         self.temperature_offset_input = "input_number.temperature_offset"
         self.unique_id = "picostat"
+        self.ventilation_entity_id = ""
+        self.use_home_assistant_ventilation = False
         if from_file is not None:
             self.load_from_file(from_file)
         
@@ -60,6 +62,8 @@ class HomeAssistantSettings:
             self.temperature_output = data["temperature_output"]
             self.temperature_offset_input = data["temperature_offset_input"]
             self.unique_id = data["unique_id"]
+            self.ventilation_entity_id = data["ventilation_entity_id"]
+            self.use_home_assistant_ventilation = data["use_home_assistant_ventilation"]
 
 class HomeAssistantHelper:
     def __init__(self, settings: HomeAssistantSettings):
@@ -71,7 +75,7 @@ class HomeAssistantHelper:
                 "Authorization": f"Bearer {self.settings.api_key}",
                 "content-type": "application/json",
             }).json()["state"]
-            print(f"{setting} {val}")
+            #print(f"{setting} {val}")
             time.sleep(0.1)
             return val
         except:
@@ -79,19 +83,36 @@ class HomeAssistantHelper:
             time.sleep(0.1)
             return None
         
-    def send_to_home_assistant(self, helper:str, value, uom:str = None):
+    def set_ventilation(self, state:str):
+        if self.settings.use_home_assistant_ventilation is not True:
+            return
         try:
-            state = {"state":value,"unique_id":self.settings.unique_id,"entity_id":helper}
-            if uom is not None:
-                state = {"state":value,"unique_id":self.settings.unique_id,"entity_id":helper, "attributes": {"unit_of_measurement": uom}}
-            response = requests.post(f"{self.settings.base_api}states/{helper}",data=json.dumps(state),headers={
+            state = {"state":state}
+            response = requests.post(f"{self.settings.base_api}states/{self.settings.ventilation_entity_id}",data=json.dumps(state),headers={
                     "Authorization": f"Bearer {self.settings.api_key}",
                     "content-type": "application/json",
                 })
-            print(response.json())
+            #print(response.json())
         except:
             print(f"failed to set helper: {self.settings.base_api}states/{helper} value:{value}")
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
         time.sleep(0.1)
+        
+    def send_to_home_assistant(self, helper:str, value, uom:str = None):
+        try:
+            state = {"state":value, "unique_id":self.settings.unique_id, "entity_id":helper}
+            if uom is not None:
+                state = {"state":value, "unique_id":self.settings.unique_id, "entity_id":helper, "attributes": {"unit_of_measurement": uom}}
+            response = requests.post(f"{self.settings.base_api}states/{helper}",data=json.dumps(state),headers={
+                    "Authorization": f"Bearer {self.settings.api_key}",
+                    "content-type": "application/json",
+                })
+            #print(response.json())
+        except:
+            print(f"failed to set helper: {self.settings.base_api}states/{helper} value:{value}")
+            # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
+            pass
+        time.sleep(0.1)
+
 

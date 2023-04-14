@@ -40,6 +40,8 @@ def btn_m_press():
 
 def show_screen(pre = ""):
     state = "idle"
+    if thermostat.ventilating:
+        state = "ventilating"
     if thermostat.state.ac_on:
         state = "cooling"
     if thermostat.state.fan_on:

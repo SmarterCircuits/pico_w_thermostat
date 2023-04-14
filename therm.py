@@ -53,20 +53,24 @@ class Thermostat:
     
     def run(self):
         now_time = (time.localtime()[3],time.localtime()[4])
+        print(f"thermostat run at {now_time}")
         # read temperature
         # TODO: set F or C
         temp = self.get_temp()[1]
         self.state.temperature = temp
+        print(f"thermostat temp {temp}")
 
         # check for settings updates if Home Assistant is present
         self.settings.update_from_home_assistant(self.ha_helper)
 
         # if the system is in stage cool down, check if it's done
         if self.stage_cooldown and self.cooldown_until == now_time:
+            print("cooldown done")
             self.stage_cooldown = False
 
         # if the system is disabled, make sure nothing is on and stop here.
         if self.settings.hvac_enabled is not True:
+            print("system is disabled")
             if self.state.ac_on:
                 self.ac.on()
             if self.state.fan_on:
@@ -78,30 +82,38 @@ class Thermostat:
 
         # if the system is in stage cool down or the override is set, stop here
         if self.stage_cooldown or self.settings.manual_override:
+            print("still cooling down or override is set")
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if the system is cooling and we're not lower than the overshoot temperature, we're in the cooling cycle.
         if self.state.ac_on and temp > self.settings.temperature_high_setting - self.settings.swing_temp_offset:
+            print("system is cooling")
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if we're ventilating and we're done, start cooling
         if self.ventilating and self.ventilate_until == now_time:
-            self.ventilating = False
+            print("done venting, start cooling")
+            self.stop_ventilating()
             self.start_cooling()
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if we're over temp, we should be in the cooling cycle (I know it's nasty looking, but stop and think about it)
         if temp > self.settings.temperature_high_setting:
+            print("over temp")
             if self.settings.use_whole_house_fan:
+                print("using whole house fan")
                 if self.ventilating:
+                    print("still venting, move on")
                     self.state.report_to_home_assistant(self.ha_helper)
                     return
+                print("start venting")
                 self.state.report_to_home_assistant(self.ha_helper)
-                self.start_ventilating()
+                self.start_ventilating(now_time)
                 return
+            print("not using whole house fan, start cooling")
             self.last_circulation = now_time
             self.start_cooling()
             self.state.report_to_home_assistant(self.ha_helper)
@@ -109,71 +121,92 @@ class Thermostat:
         
         # if we're not over temp, but the cooling is on, turn it off and stage cool down.
         if self.state.ac_on:
+            print("done cooling")
             self.stop_cooling(now_time)
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if the system is heating and we're not higher than the overshoot temperature, we're in the heating cycle.
         if self.state.heat_on and temp < self.settings.temperature_low_setting + self.settings.swing_temp_offset:
+            print("still heating")
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if we're under temp, we should be in the heating cycle
         if temp < self.settings.temperature_low_setting:
+            print("under temp, start heating")
             self.start_heating()
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if we're not over temp, but the heating is on, turn it off and stage cool down.
         if self.state.heat_on:
+            print("done heating")
             self.stop_heating(now_time)
             self.state.report_to_home_assistant(self.ha_helper)
             return
 
         # if we're circulating and we're done, stop and stage cool down
         if self.state.fan_on and self.circulate_until == now_time:
+            print("done circulating")
             self.stop_circulating(now_time)
             self.state.report_to_home_assistant(self.ha_helper)
             return
 
         since_last_circulation = self.minutes_from(now_time,self.last_circulation)
         if since_last_circulation >= self.settings.air_circulation_minutes:
+            print("start circulating")
             self.start_circulating(now_time)
         self.state.report_to_home_assistant(self.ha_helper)
     
     def start_circulating(self, now_time:tuple):
+        print(f"start_circulating {now_time}")
         self.fan.off()
         self.state.fan_on = True
         self.circulate_until = self.add_minutes(now_time,self.settings.circulation_cycle_minutes)
     
     def stop_circulating(self, now_time:tuple):
+        print(f"stop_circulating {now_time}")
         self.fan.on()
         self.state.fan_on = False
         self.cool_down_stage(now_time)
         
     def start_ventilating(self, now_time:tuple):
+        print(f"start_ventilating {now_time}")
+        self.ha_helper.set_ventilation("on")
         self.ventilate_until = self.add_minutes(now_time,self.settings.ventilation_cycle_minutes)
         self.ventilating = True
+        
+    def stop_ventilating(self):
+        print("stop_ventilating")
+        self.ha_helper.set_ventilation("off")
+        self.ventilating = False
     
     def start_cooling(self):
+        print("start_cooling")
         self.ac.off()
         self.state.ac_on = True
     
     def stop_cooling(self, now_time:tuple):
+        print(f"stop_cooling {now_time}")
         self.ac.on()
         self.state.ac_on = False
         self.cool_down_stage(now_time)
     
     def start_heating(self):
+        print("start_heating")
         self.heat.off()
         self.state.heat_on = True
     
     def stop_heating(self, now_time:tuple):
+        print(f"stop_heating {now_time}")
         self.heat.on()
         self.state.heat_on = False
         self.cool_down_stage(now_time)
     
     def cool_down_stage(self, now_time:tuple):
+        print(f"cool_down_stage {now_time}")
         self.last_circulation = now_time
         self.cooldown_until = self.add_minutes(now_time, self.settings.stage_cooldown_minutes)
         self.stage_cooldown = True
+
