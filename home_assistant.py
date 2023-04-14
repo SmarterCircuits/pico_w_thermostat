@@ -23,6 +23,7 @@ class HomeAssistantSettings:
         self.ac_on_output = "binary_sensor.hallway_ac_on"
         self.ventilation_on_output = "binary_sensor.hallway_whf_on"
         self.temperature_output = "sensor.hallway_thermostat_temperature"
+        self.temperature_offset_input = "input_number.temperature_offset"
         if from_file is not None:
             self.load_from_file(from_file)
         
