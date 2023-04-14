@@ -73,6 +73,8 @@ class Thermostat:
                 print(f"thermostat external temp {external_temp_f}")
                 if self.settings.use_temp_sensor_average:
                     temp = round((temp + external_temp_f) / 2, 2)
+                else:
+                    temp = external_temp_f
             except:
                 print("external sensor read failure")
         print(f"thermostat using temp {temp}")

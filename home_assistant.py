@@ -78,28 +78,33 @@ class HomeAssistantHelper:
             #print(f"{setting} {val}")
             time.sleep(0.1)
             return val
-        except:
+        except Exception as e:
             print(f"failed to get setting: {self.settings.base_api}states/{setting}")
+            print(e)
             time.sleep(0.1)
             return None
         
     def set_ventilation(self, state:str):
         if self.settings.use_home_assistant_ventilation is not True:
             return
+        response = None
         try:
             state = {"state":state}
             response = requests.post(f"{self.settings.base_api}states/{self.settings.ventilation_entity_id}",data=json.dumps(state),headers={
                     "Authorization": f"Bearer {self.settings.api_key}",
                     "content-type": "application/json",
                 })
-            #print(response.json())
-        except:
-            print(f"failed to set helper: {self.settings.base_api}states/{helper} value:{value}")
+        except Exception as e:
+            print(f"failed to set ventilation: {state}")
+            print(e)
+            if response is not None:
+                print(response.json())
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
         time.sleep(0.1)
         
     def send_to_home_assistant(self, helper:str, value, uom:str = None):
+        response = None
         try:
             state = {"state":value, "unique_id":self.settings.unique_id, "entity_id":helper}
             if uom is not None:
@@ -108,9 +113,11 @@ class HomeAssistantHelper:
                     "Authorization": f"Bearer {self.settings.api_key}",
                     "content-type": "application/json",
                 })
-            #print(response.json())
-        except:
+        except Exception as e:
             print(f"failed to set helper: {self.settings.base_api}states/{helper} value:{value}")
+            print(e)
+            if response is not None:
+                print(response.json())
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
         time.sleep(0.1)
