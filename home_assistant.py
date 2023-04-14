@@ -56,6 +56,7 @@ class HomeAssistantSettings:
             self.ac_on_output = data["ac_on_output"]
             self.ventilation_on_output = data["ventilation_on_output"]
             self.temperature_output = data["temperature_output"]
+            self.temperature_offset_input = data["temperature_offset_input"]
 
 class HomeAssistantHelper:
     def __init__(self, settings: HomeAssistantSettings):

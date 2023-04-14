@@ -17,5 +17,6 @@
     "temperature_high_setting": 73,
     "temperature_low_setting": 69,
     "use_whole_house_fan": false,
-    "ventilation_cycle_minutes": 10
+    "ventilation_cycle_minutes": 10,
+    "temp_offset": 3.0
 }

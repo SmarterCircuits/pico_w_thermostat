@@ -22,6 +22,7 @@ class ThermostatSettings:
         self.ac_pin = 10
         self.fan_pin = 11
         self.heat_pin = 12
+        self.temp_offset = 3
         if from_file is not None:
             self.load_from_file(from_file)
         
@@ -48,7 +49,8 @@ class ThermostatSettings:
             "manual_override": self.manual_override,
             "ac_pin": self.ac_pin,
             "fan_pin": self.fan_pin,
-            "heat_pin": self.heat_pin
+            "heat_pin": self.heat_pin,
+            "temp_offset": self.temp_offset
         })
     
     def save_to_file(self, file):
@@ -77,6 +79,7 @@ class ThermostatSettings:
             self.use_whole_house_fan = data["use_whole_house_fan"]
             self.hvac_enabled = str(data["hvac_enabled"]).lower() == "false"
             self.swing_temp_offset = data["swing_temp_offset"]
+            self.temp_offset = data["temp_offset"]
         
     def update_from_home_assistant(self, helper: HomeAssistantHelper):
         if helper.settings.enabled is False:
@@ -110,6 +113,10 @@ class ThermostatSettings:
         over_temp = helper.get_home_assistant_setting(helper.settings.over_temp_input)
         if over_temp is not None:
             self.swing_temp_offset = float(over_temp)
+        
+        temperature_offset = helper.get_home_assistant_setting(helper.settings.temperature_offset_input)
+        if temperature_offset is not None:
+            self.temp_offset = float(temperature_offset)
         
         use_vent = helper.get_home_assistant_setting(helper.settings.ventilation_enabled_input)
         if use_vent is not None:
