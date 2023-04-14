@@ -44,11 +44,12 @@ class Thermostat:
         return (h,m)
     
     def get_temp(self):
+        # TODO: fix for C as well
         conversion_factor = 3.3 / (65535)
         reading = self.sensor.read_u16() * conversion_factor
         temperature_c = 27 - (reading - 0.706)/0.001721
         temperature_f = (temperature_c * 9/5) + 32
-        return (temperature_c, temperature_f)
+        return (temperature_c, temperature_f + self.settings.temp_offset)
     
     def run(self):
         now_time = (time.localtime()[3],time.localtime()[4])
