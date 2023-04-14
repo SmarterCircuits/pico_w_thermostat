@@ -23,6 +23,9 @@ class ThermostatSettings:
         self.fan_pin = 11
         self.heat_pin = 12
         self.temp_offset = 3
+        self.external_sensor_type = 'none'
+        self.external_sensor_pin = 0
+        self.use_temp_sensor_average = False
         if from_file is not None:
             self.load_from_file(from_file)
         
@@ -50,7 +53,10 @@ class ThermostatSettings:
             "ac_pin": self.ac_pin,
             "fan_pin": self.fan_pin,
             "heat_pin": self.heat_pin,
-            "temp_offset": self.temp_offset
+            "temp_offset": self.temp_offset,
+            "external_sensor_type": self.external_sensor_type,
+            "external_sensor_pin": self.external_sensor_pin,
+            "use_temp_sensor_average": self.use_temp_sensor_average
         })
     
     def save_to_file(self, file):
@@ -80,6 +86,9 @@ class ThermostatSettings:
             self.hvac_enabled = str(data["hvac_enabled"]).lower() == "false"
             self.swing_temp_offset = data["swing_temp_offset"]
             self.temp_offset = data["temp_offset"]
+            self.external_sensor_type = data["external_sensor_type"]
+            self.external_sensor_pin = data["external_sensor_pin"]
+            self.use_temp_sensor_average = data["use_temp_sensor_average"]
         
     def update_from_home_assistant(self, helper: HomeAssistantHelper):
         if helper.settings.enabled is False:
@@ -127,4 +136,5 @@ class ThermostatSettings:
             self.hvac_enabled = hvac_enabled.lower() == "on"
         
         self.save_to_file('settings.json')
+
 

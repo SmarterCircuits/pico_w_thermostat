@@ -2,6 +2,7 @@ import time
 from settings import ThermostatSettings
 from state import ThermostatState
 from home_assistant import HomeAssistantHelper, HomeAssistantSettings
+from dht11 import DHT11
 from machine import ADC, Pin
 
 class Thermostat:
@@ -18,6 +19,9 @@ class Thermostat:
         self.fan.on()
         self.ac.on()
         self.sensor = ADC(4)
+        self.external_sensor = None
+        if self.settings.external_sensor_type == 'dht11':
+            self.external_sensor = DHT11(Pin(self.settings.external_sensor_pin, Pin.OUT, Pin.PULL_DOWN))
 
         now_time = (time.localtime()[3],time.localtime()[4])
 
@@ -52,13 +56,27 @@ class Thermostat:
         return (temperature_c, temperature_f + self.settings.temp_offset)
     
     def run(self):
+        # in case the settings weren't picked up on first run
+        if self.settings.external_sensor_type == 'dht11' and self.external_sensor is None:
+            self.external_sensor = DHT11(Pin(self.settings.external_sensor_pin, Pin.OUT, Pin.PULL_DOWN))
+        
         now_time = (time.localtime()[3],time.localtime()[4])
         print(f"thermostat run at {now_time}")
         # read temperature
         # TODO: set F or C
         temp = self.get_temp()[1]
+        print(f"thermostat on board temp {temp}")
+        if self.external_sensor is not None:
+            try:
+                external_temp_c = self.external_sensor.temperature
+                external_temp_f = (external_temp_c * 9/5) + 32
+                print(f"thermostat external temp {external_temp_f}")
+                if self.settings.use_temp_sensor_average:
+                    temp = round((temp + external_temp_f) / 2, 2)
+            except:
+                print("external sensor read failure")
+        print(f"thermostat using temp {temp}")
         self.state.temperature = temp
-        print(f"thermostat temp {temp}")
 
         # check for settings updates if Home Assistant is present
         self.settings.update_from_home_assistant(self.ha_helper)
