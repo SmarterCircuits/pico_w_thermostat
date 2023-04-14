@@ -24,6 +24,7 @@ class HomeAssistantSettings:
         self.ventilation_on_output = "binary_sensor.hallway_whf_on"
         self.temperature_output = "sensor.hallway_thermostat_temperature"
         self.temperature_offset_input = "input_number.temperature_offset"
+        self.unique_id = "picostat"
         if from_file is not None:
             self.load_from_file(from_file)
         
@@ -58,6 +59,7 @@ class HomeAssistantSettings:
             self.ventilation_on_output = data["ventilation_on_output"]
             self.temperature_output = data["temperature_output"]
             self.temperature_offset_input = data["temperature_offset_input"]
+            self.unique_id = data["unique_id"]
 
 class HomeAssistantHelper:
     def __init__(self, settings: HomeAssistantSettings):
@@ -77,18 +79,19 @@ class HomeAssistantHelper:
             time.sleep(0.1)
             return None
         
-    def send_to_home_assistant(self, helper:str, value, is_temp:bool = False):
+    def send_to_home_assistant(self, helper:str, value, uom:str = None):
         try:
-            state = {"state":value,"unique_id":helper,"entity_id":helper}
-            if is_temp:
-                state["attributes"] = {"unit_of_measurement": "°F"}
+            state = {"state":value,"unique_id":self.settings.unique_id,"entity_id":helper}
+            if uom is not None:
+                state = {"state":value,"unique_id":self.settings.unique_id,"entity_id":helper, "attributes": {"unit_of_measurement": uom}}
             response = requests.post(f"{self.settings.base_api}states/{helper}",data=json.dumps(state),headers={
                     "Authorization": f"Bearer {self.settings.api_key}",
                     "content-type": "application/json",
                 })
-            print(response.status_code)
+            print(response.json())
         except:
             print(f"failed to set helper: {self.settings.base_api}states/{helper} value:{value}")
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
         time.sleep(0.1)
+

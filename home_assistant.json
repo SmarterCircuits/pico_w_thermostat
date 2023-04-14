@@ -1,4 +1,5 @@
 {
+    "unique_id": "picostat",
     "api_key": "",
     "base_api": "/api/",
     "base_url": "",

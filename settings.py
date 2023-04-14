@@ -127,3 +127,4 @@ class ThermostatSettings:
             self.hvac_enabled = hvac_enabled.lower() == "on"
         
         self.save_to_file('settings.json')
+
