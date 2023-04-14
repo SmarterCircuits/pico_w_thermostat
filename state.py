@@ -37,4 +37,4 @@ class ThermostatState:
         helper.send_to_home_assistant(helper.settings.ventilation_on_output,whf_on)
 
         if self.temperature is not None:
-            helper.send_to_home_assistant(helper.settings.temperature_output,self.temperature)
+            helper.send_to_home_assistant(helper.settings.temperature_output,str(round(self.temperature,2)),True)

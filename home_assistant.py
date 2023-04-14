@@ -77,9 +77,12 @@ class HomeAssistantHelper:
             time.sleep(0.1)
             return None
         
-    def send_to_home_assistant(self, helper:str, value):
+    def send_to_home_assistant(self, helper:str, value, is_temp:bool = False):
         try:
-            response = requests.post(f"{self.settings.base_api}states/{helper}",data=json.dumps({"state":value,"unique_id":f"picostat","entity_id":helper}),headers={
+            state = {"state":value,"unique_id":helper,"entity_id":helper}
+            if is_temp:
+                state["attributes"] = {"unit_of_measurement": "°F"}
+            response = requests.post(f"{self.settings.base_api}states/{helper}",data=json.dumps(state),headers={
                     "Authorization": f"Bearer {self.settings.api_key}",
                     "content-type": "application/json",
                 })
