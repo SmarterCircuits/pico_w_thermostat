@@ -8,19 +8,20 @@ This version of the firmware can be found here:
 
 https://peppe8o.com/download/micropython/firmware/micropython-firmware-pico-w-290622.uf2
 
-  
-
 In order to install it, hold the boot button on the Pico W, connect the USB cable, and drop the uf2 file into the drive that becomes available. Once it has copied, the Pico should reconnect as itself and be accessible through your IDE.
-
-  
 
 This project also relies on the micropython-ssd1306 module.
 
-  
+## Installation
+
+1. clone the repositiory `git clone https://github.com/SmarterCircuits/pico_w_thermostat.git`
+2. create a virtual environment `python -m venv venv`
+3. install the library `python -m pip install -e .`
+4. run the module `python -m pico_w_thermostat`
 
 ## Using with Home Assistant
 
-**IMPORTANT: This project is not in any way associated with, endorsed by, or supported by Home Assistant or any of their engineers. This is only meant to work with Home Assistant because it is what I use.**  
+**IMPORTANT: This project is not in any way associated with, endorsed by, or supported by Home Assistant or any of their engineers. This is only meant to work with Home Assistant because it is what I use.**
 
 You will need your Long-Life Key to access Home Assistant from the Pico W Thermostat. Just paste it into the appropriate setting in the home_assistant.json file.
 
@@ -28,7 +29,6 @@ In order to control and configure your thermostat with Home Assistant, you'll ne
 
 Below are the recommended helpers and their purpose. You may omit any of these and the default setting or local setting programmed via buttons or MQTT message will be used.
 
-  
 |home_assistant.json key|recommended helper/entity type|recommended entity name|purpose|
 |--|--|--|--|
 |circulate_after_input|input_number|still_air_time_limit|how many minutes to wait since the last time heating, cooling, or circulation ended before circulating air|
@@ -42,13 +42,8 @@ Below are the recommended helpers and their purpose. You may omit any of these a
 |stage_limit_input|input_number|stage_limit|how many minutes any cycle can run at most|
 |ventilation_enabled_input|input_boolean|ac_ventilation_assist|whether or not the system runs a ventilation fan before cooling cycles|
 
-  
-  
-
 ## Features to be added:
 
 - MQTT support
-
 - Actually use the ventilation cycle (needs the "on" command which will send a message to either MQTT or Home Assistant depending on how your fan is set up).
-
 - External sensor support (doesn't have to be a DHT11 or DHT22, I will be testing several sensors and including instructions for setting up each)
