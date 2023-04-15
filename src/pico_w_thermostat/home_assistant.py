@@ -2,8 +2,9 @@ import json
 import urequests as requests
 import time
 
+
 class HomeAssistantSettings:
-    def __init__(self, from_file:str = None):
+    def __init__(self):
         self.enabled = False
         self.api_key = ""
         self.base_url = ""
@@ -27,19 +28,22 @@ class HomeAssistantSettings:
         self.unique_id = "picostat"
         self.ventilation_entity_id = ""
         self.use_home_assistant_ventilation = False
-        if from_file is not None:
-            self.load_from_file(from_file)
-        
+
+    @classmethod
+    def from_file(cls, filename):
+        self = cls()
+        self.load_from_file(filename)
+        return self
+
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
-    
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
     def save_to_file(self, file):
         with open(file) as fd:
             fd.write(self.toJSON())
             fd.close()
-    
-    def load_from_file(self, file:str):
+
+    def load_from_file(self, file: str):
         with open(file) as fd:
             data = json.load(fd)
             self.enabled = data["enabled"]
@@ -65,17 +69,21 @@ class HomeAssistantSettings:
             self.ventilation_entity_id = data["ventilation_entity_id"]
             self.use_home_assistant_ventilation = data["use_home_assistant_ventilation"]
 
+
 class HomeAssistantHelper:
     def __init__(self, settings: HomeAssistantSettings):
         self.settings = settings
-        
-    def get_home_assistant_setting(self, setting:str):
+
+    def get_home_assistant_setting(self, setting: str):
         try:
-            val = requests.get(f"{self.settings.base_api}states/{setting}",headers={
-                "Authorization": f"Bearer {self.settings.api_key}",
-                "content-type": "application/json",
-            }).json()["state"]
-            #print(f"{setting} {val}")
+            val = requests.get(
+                f"{self.settings.base_api}states/{setting}",
+                headers={
+                    "Authorization": f"Bearer {self.settings.api_key}",
+                    "content-type": "application/json",
+                },
+            ).json()["state"]
+            # print(f"{setting} {val}")
             time.sleep(0.1)
             return val
         except Exception as e:
@@ -83,17 +91,21 @@ class HomeAssistantHelper:
             print(e)
             time.sleep(0.1)
             return None
-        
-    def set_ventilation(self, state:str):
+
+    def set_ventilation(self, state: str):
         if self.settings.use_home_assistant_ventilation is not True:
             return
         response = None
         try:
-            state = {"state":state}
-            response = requests.post(f"{self.settings.base_api}states/{self.settings.ventilation_entity_id}",data=json.dumps(state),headers={
+            data = {"state": state}
+            response = requests.post(
+                f"{self.settings.base_api}states/{self.settings.ventilation_entity_id}",
+                data=json.dumps(data),
+                headers={
                     "Authorization": f"Bearer {self.settings.api_key}",
                     "content-type": "application/json",
-                })
+                },
+            )
         except Exception as e:
             print(f"failed to set ventilation: {state}")
             print(e)
@@ -102,24 +114,37 @@ class HomeAssistantHelper:
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
         time.sleep(0.1)
-        
-    def send_to_home_assistant(self, helper:str, value, uom:str = None):
+
+    def send_to_home_assistant(self, helper: str, value, uom: str | None = None):
         response = None
         try:
-            state = {"state":value, "unique_id":self.settings.unique_id, "entity_id":helper}
+            state = {
+                "state": value,
+                "unique_id": self.settings.unique_id,
+                "entity_id": helper,
+            }
             if uom is not None:
-                state = {"state":value, "unique_id":self.settings.unique_id, "entity_id":helper, "attributes": {"unit_of_measurement": uom}}
-            response = requests.post(f"{self.settings.base_api}states/{helper}",data=json.dumps(state),headers={
+                state = {
+                    "state": value,
+                    "unique_id": self.settings.unique_id,
+                    "entity_id": helper,
+                    "attributes": {"unit_of_measurement": uom},
+                }
+            response = requests.post(
+                f"{self.settings.base_api}states/{helper}",
+                data=json.dumps(state),
+                headers={
                     "Authorization": f"Bearer {self.settings.api_key}",
                     "content-type": "application/json",
-                })
+                },
+            )
         except Exception as e:
-            print(f"failed to set helper: {self.settings.base_api}states/{helper} value:{value}")
+            print(
+                f"failed to set helper: {self.settings.base_api}states/{helper} value:{value}"
+            )
             print(e)
             if response is not None:
                 print(response.json())
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
         time.sleep(0.1)
-
-

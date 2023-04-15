@@ -1,11 +1,12 @@
 from machine import Pin
 
+
 class Button:
-    def __init__(self, pin):
+    def __init__(self, pin, on_up=None, on_down=None):
         self.pin = Pin(pin, Pin.IN, Pin.PULL_DOWN)
         self.pressed = False
-        self.on_down = None
-        self.on_up = None
+        self.on_down = on_down
+        self.on_up = on_up
 
     def update(self):
         pressed = self.pin.value() > 0
