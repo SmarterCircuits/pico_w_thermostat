@@ -60,6 +60,7 @@ class ThermostatSettings:
         })
     
     def save_to_file(self, file):
+        # this is left for reference only. If power is lost during a save, loading halts the device.
         with open(file) as fd:
             fd.write(self.toJSON())
             fd.close()
@@ -134,7 +135,3 @@ class ThermostatSettings:
         hvac_enabled = helper.get_home_assistant_setting(helper.settings.hvac_enabled_input)
         if hvac_enabled is not None:
             self.hvac_enabled = hvac_enabled.lower() == "on"
-        
-        self.save_to_file('settings.json')
-
-

@@ -57,13 +57,6 @@ if __name__ == "__main__":
     sta_if = network.WLAN(network.STA_IF)
     sta_if.active(True)
     sta_if.connect(thermostat.settings.wifi_ssid, thermostat.settings.wifi_pass)
-    # Wait for the connection to be established
-    screen.display_text("connecting wifi...")
-    while not sta_if.isconnected():
-        thermostat.run()
-        show_screen("!^ ")
-        time.sleep(10)
-        pass
 
     btn_up = Button(2)
     btn_up.on_up = btn_up_press
@@ -72,13 +65,18 @@ if __name__ == "__main__":
     btn_down = Button(4)
     btn_down.on_up = btn_down_press
     ticks = 0
+    wifi_status = ""
     while True:
         btn_up.update()
         btn_m.update()
         btn_down.update()
         if ticks == 0:
+            if not sta_if.isconnected():
+                wifi_status = "!^ "
+            else:
+                wifi_status = ""
             thermostat.run()
-            show_screen()
+            show_screen(wifi_status)
             ticks = thermostat.settings.run_every_seconds * 10
         ticks = ticks - 1
         time.sleep(0.1)

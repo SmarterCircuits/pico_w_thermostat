@@ -4,6 +4,10 @@
 Currently, if the device loses power during a configuration file write, the end of the file will be duplicated and the json parsing will fail, halting the thermostat. The only fix at the moment is to resave the configuration file and restart the thermostat. I have tried wrapping the file load in a try/except, but this results in an EPERM error. I am considering removing the save to file feature that updates the configuration based on incoming Home Assistant (or MQTT) data. I think this would be alright since the default config would be overwritten as soon as the thermostat connected to another system where the setting would still be the same.
 I will have an update to the code as soon as possible--hopefully today (4/17/23).
 
+### UPDATE: BUG FIX
+The issue descirbed above has been resolved by simply not saving changes as I mentioned. It's not really necessary anyway. Please pull updated code if you have not done so already. 
+****
+
 This code is for a DIY smart thermostat based on a Raspberry Pi Pico W and is intended to integrate with Home Assistant, MQTT, or be used as a stand-alone device.
 
 This code relies on the correct firmware to be installed on the Pico which includes the network module.

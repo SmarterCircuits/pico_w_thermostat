@@ -27,17 +27,13 @@ class HomeAssistantSettings:
         self.unique_id = "picostat"
         self.ventilation_entity_id = ""
         self.use_home_assistant_ventilation = False
+        self.console_output = "input_text.hallway_thermostat_console"
         if from_file is not None:
             self.load_from_file(from_file)
         
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
             sort_keys=True, indent=4)
-    
-    def save_to_file(self, file):
-        with open(file) as fd:
-            fd.write(self.toJSON())
-            fd.close()
     
     def load_from_file(self, file:str):
         with open(file) as fd:
@@ -64,6 +60,7 @@ class HomeAssistantSettings:
             self.unique_id = data["unique_id"]
             self.ventilation_entity_id = data["ventilation_entity_id"]
             self.use_home_assistant_ventilation = data["use_home_assistant_ventilation"]
+            self.console_output = data["console_output"]
 
 class HomeAssistantHelper:
     def __init__(self, settings: HomeAssistantSettings):
@@ -104,6 +101,8 @@ class HomeAssistantHelper:
         time.sleep(0.1)
         
     def send_to_home_assistant(self, helper:str, value, uom:str = None):
+        if self.settings.enabled is not True:
+            return
         response = None
         try:
             state = {"state":value, "unique_id":self.settings.unique_id, "entity_id":helper}

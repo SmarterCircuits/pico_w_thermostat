@@ -21,5 +21,6 @@
     "ventilation_on_output": "binary_sensor.hallway_whf_on",
     "temperature_offset_input": "input_number.temperature_offset",
     "use_home_assistant_ventilation": false,
-    "ventilation_entity_id": "binary_sensor.ventilation_trigger"
+    "ventilation_entity_id": "binary_sensor.ventilation_trigger",
+    "console_output": "input_text.furnace_thermostat_console"
 }
