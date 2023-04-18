@@ -70,23 +70,23 @@ class Thermostat:
             self.external_sensor = DHT11(Pin(self.settings.external_sensor_pin, Pin.OUT, Pin.PULL_DOWN))
         
         now_time = (time.localtime()[3],time.localtime()[4])
-        self.console_out(f"thermostat run at {now_time}")
+        print(f"thermostat run at {now_time}")
         # read temperature
         # TODO: set F or C
         temp = self.get_temp()[1]
-        self.console_out(f"thermostat on board temp {temp}")
+        print(f"thermostat on board temp {temp}")
         if self.external_sensor is not None:
             try:
                 external_temp_c = self.external_sensor.temperature
                 external_temp_f = (external_temp_c * 9/5) + 32
-                self.console_out(f"thermostat external temp {external_temp_f}")
+                print(f"thermostat external temp {external_temp_f}")
                 if self.settings.use_temp_sensor_average:
                     temp = round((temp + external_temp_f) / 2, 2)
                 else:
                     temp = external_temp_f
             except:
                 self.console_out("external sensor read failure")
-        self.console_out(f"thermostat using temp {temp}")
+        print(f"thermostat using temp {temp}")
         self.state.temperature = temp
 
         # check for settings updates if Home Assistant is present
@@ -94,12 +94,12 @@ class Thermostat:
 
         # if the system is in stage cool down, check if it's done
         if self.stage_cooldown and self.cooldown_until == now_time:
-            self.console_out("cooldown done")
+            self.console_out("cooldown_stage done")
             self.stage_cooldown = False
 
         # if the system is disabled, make sure nothing is on and stop here.
         if self.settings.hvac_enabled is not True:
-            self.console_out("system is disabled")
+            print("system is disabled")
             if self.state.ac_on:
                 self.ac.on()
             if self.state.fan_on:
@@ -111,19 +111,19 @@ class Thermostat:
 
         # if the system is in stage cool down or the override is set, stop here
         if self.stage_cooldown or self.settings.manual_override:
-            self.console_out("still cooling down or override is set")
+            print("still cooling down or override is set")
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if the system is cooling and we're not lower than the overshoot temperature, we're in the cooling cycle.
         if self.state.ac_on and temp > self.settings.temperature_high_setting - self.settings.swing_temp_offset:
-            self.console_out("system is cooling")
+            print("system is cooling")
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if we're ventilating and we're done, start cooling
         if self.ventilating and self.ventilate_until == now_time:
-            self.console_out("done venting, start cooling")
+            print("done venting, start cooling")
             self.stop_ventilating()
             self.start_cooling()
             self.state.report_to_home_assistant(self.ha_helper)
@@ -131,18 +131,18 @@ class Thermostat:
         
         # if we're over temp, we should be in the cooling cycle (I know it's nasty looking, but stop and think about it)
         if temp > self.settings.temperature_high_setting:
-            self.console_out("over temp")
+            print("over temp")
             if self.settings.use_whole_house_fan:
-                self.console_out("using whole house fan")
+                print("using whole house fan")
                 if self.ventilating:
-                    self.console_out("still venting, move on")
+                    print("still venting, move on")
                     self.state.report_to_home_assistant(self.ha_helper)
                     return
-                self.console_out("start venting")
+                print("start venting")
                 self.state.report_to_home_assistant(self.ha_helper)
                 self.start_ventilating(now_time)
                 return
-            self.console_out("not using whole house fan, start cooling")
+            print("not using whole house fan, start cooling")
             self.last_circulation = now_time
             self.start_cooling()
             self.state.report_to_home_assistant(self.ha_helper)
@@ -150,41 +150,41 @@ class Thermostat:
         
         # if we're not over temp, but the cooling is on, turn it off and stage cool down.
         if self.state.ac_on:
-            self.console_out("done cooling")
+            print("done cooling")
             self.stop_cooling(now_time)
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if the system is heating and we're not higher than the overshoot temperature, we're in the heating cycle.
         if self.state.heat_on and temp < self.settings.temperature_low_setting + self.settings.swing_temp_offset:
-            self.console_out("still heating")
+            print("still heating")
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if we're under temp, we should be in the heating cycle
         if temp < self.settings.temperature_low_setting:
-            self.console_out("under temp, start heating")
+            print("under temp, start heating")
             self.start_heating()
             self.state.report_to_home_assistant(self.ha_helper)
             return
         
         # if we're not over temp, but the heating is on, turn it off and stage cool down.
         if self.state.heat_on:
-            self.console_out("done heating")
+            print("done heating")
             self.stop_heating(now_time)
             self.state.report_to_home_assistant(self.ha_helper)
             return
 
         # if we're circulating and we're done, stop and stage cool down
         if self.state.fan_on and self.circulate_until == now_time:
-            self.console_out("done circulating")
+            print("done circulating")
             self.stop_circulating(now_time)
             self.state.report_to_home_assistant(self.ha_helper)
             return
 
         since_last_circulation = self.minutes_from(now_time,self.last_circulation)
         if since_last_circulation >= self.settings.air_circulation_minutes:
-            self.console_out("start circulating")
+            print("start circulating")
             self.start_circulating(now_time)
         self.state.report_to_home_assistant(self.ha_helper)
     

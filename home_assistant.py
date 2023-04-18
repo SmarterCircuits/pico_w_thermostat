@@ -1,6 +1,5 @@
 import json
 import urequests as requests
-import time
 
 class HomeAssistantSettings:
     def __init__(self, from_file:str = None):
@@ -73,12 +72,10 @@ class HomeAssistantHelper:
                 "content-type": "application/json",
             }).json()["state"]
             #print(f"{setting} {val}")
-            time.sleep(0.1)
             return val
         except Exception as e:
             print(f"failed to get setting: {self.settings.base_api}states/{setting}")
             print(e)
-            time.sleep(0.1)
             return None
         
     def set_ventilation(self, state:str):
@@ -98,7 +95,6 @@ class HomeAssistantHelper:
                 print(response.json())
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
-        time.sleep(0.1)
         
     def send_to_home_assistant(self, helper:str, value, uom:str = None):
         if self.settings.enabled is not True:
@@ -119,6 +115,5 @@ class HomeAssistantHelper:
                 print(response.json())
             # I know I should do better. I'll add logging later maybe, I don't like writing if I don't have to.
             pass
-        time.sleep(0.1)
 
 
